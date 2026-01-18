@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, useRef, useState, type ReactNode, type MouseEvent } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type MouseEvent,
+} from "react";
 import { cn } from "~/lib/utils";
 
 const MouseEnterContext = createContext<
@@ -55,7 +63,7 @@ export function CardContainer({
           onMouseLeave={handleMouseLeave}
           className={cn(
             "flex items-center justify-center relative transition-all duration-200 ease-linear",
-            className
+            className,
           )}
           style={{
             transformStyle: "preserve-3d",
@@ -78,7 +86,7 @@ export function CardBody({ children, className }: CardBodyProps) {
     <div
       className={cn(
         "h-auto w-full [transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]",
-        className
+        className,
       )}
     >
       {children}
@@ -112,19 +120,22 @@ export function CardItem({
   const ref = useRef<HTMLDivElement>(null);
   const [isMouseEntered] = useMouseEnter();
 
-  const handleAnimations = () => {
+  useEffect(() => {
     if (!ref.current) return;
     if (isMouseEntered) {
       ref.current.style.transform = `translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
     } else {
       ref.current.style.transform = `translateX(0px) translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`;
     }
-  };
-
-  const contextValue = useMouseEnter();
-  if (contextValue) {
-    handleAnimations();
-  }
+  }, [
+    isMouseEntered,
+    translateX,
+    translateY,
+    translateZ,
+    rotateX,
+    rotateY,
+    rotateZ,
+  ]);
 
   return (
     <Tag
@@ -139,7 +150,10 @@ export function CardItem({
 export const useMouseEnter = () => {
   const context = useContext(MouseEnterContext);
   if (context === undefined) {
-    return [false, () => {}] as [boolean, React.Dispatch<React.SetStateAction<boolean>>];
+    return [false, () => {}] as [
+      boolean,
+      React.Dispatch<React.SetStateAction<boolean>>,
+    ];
   }
   return context;
 };
