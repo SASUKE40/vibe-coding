@@ -1,12 +1,5 @@
 /// <reference types="vite/client" />
-import {
-  HeadContent,
-  Link,
-  Scripts,
-  createRootRoute,
-  useLocation,
-} from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import * as React from "react";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
 import { NotFound } from "~/components/NotFound";
@@ -24,12 +17,24 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       ...seo({
-        title:
-          "TanStack Start | Type-Safe, Client-First, Full-Stack React Framework",
-        description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
+        title: "Vibe Coding | Interactive Slides",
+        description: "Interactive presentation slides built with TanStack Start",
       }),
     ],
     links: [
+      {
+        rel: "preconnect",
+        href: "https://fonts.googleapis.com",
+      },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap",
+      },
       { rel: "stylesheet", href: appCss },
       {
         rel: "apple-touch-icon",
@@ -51,80 +56,11 @@ export const Route = createRootRoute({
       { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
       { rel: "icon", href: "/favicon.ico" },
     ],
-    scripts: [
-      {
-        src: "/customScript.js",
-        type: "text/javascript",
-      },
-    ],
   }),
   errorComponent: DefaultCatchBoundary,
   notFoundComponent: () => <NotFound />,
   shellComponent: RootDocument,
 });
-
-function DevTools() {
-  const location = useLocation();
-  if (location.pathname === "/") {
-    return null;
-  }
-  return <TanStackRouterDevtools position="bottom-right" />;
-}
-
-function NavBar() {
-  const location = useLocation();
-  if (location.pathname === "/") {
-    return null;
-  }
-  return (
-    <>
-      <div className="p-2 flex gap-2 text-lg">
-        <Link
-          to="/"
-          activeProps={{
-            className: "font-bold",
-          }}
-          activeOptions={{ exact: true }}
-        >
-          Slides
-        </Link>{" "}
-        <Link
-          to="/posts"
-          activeProps={{
-            className: "font-bold",
-          }}
-        >
-          Posts
-        </Link>{" "}
-        <Link
-          to="/users"
-          activeProps={{
-            className: "font-bold",
-          }}
-        >
-          Users
-        </Link>{" "}
-        <Link
-          to="/route-a"
-          activeProps={{
-            className: "font-bold",
-          }}
-        >
-          Pathless Layout
-        </Link>{" "}
-        <Link
-          to="/deferred"
-          activeProps={{
-            className: "font-bold",
-          }}
-        >
-          Deferred
-        </Link>
-      </div>
-      <hr />
-    </>
-  );
-}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -133,9 +69,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <NavBar />
         {children}
-        <DevTools />
         <Scripts />
       </body>
     </html>
