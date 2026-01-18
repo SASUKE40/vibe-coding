@@ -85,6 +85,13 @@ jobs:
     language: "yaml",
   },
   {
+    id: 18,
+    type: "image",
+    title: "Claude Review in Action",
+    imageUrl: "/slides/claude-review.png",
+    caption: "Mention @claude in PR comments to trigger AI-powered code review",
+  },
+  {
     id: 16,
     type: "standard",
     title: "Chrome Extension Verification",
