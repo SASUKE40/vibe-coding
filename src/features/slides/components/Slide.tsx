@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect, useState } from "react";
 import type {
   Slide as SlideType,
   TitleSlide,
@@ -7,8 +8,63 @@ import type {
   SplitSlide,
   QuoteSlide,
   ImageSlide,
+  BulletItem,
 } from "../types";
 import { CodeBlock } from "./CodeBlock";
+import {
+  Keyboard,
+  Search,
+  ListChecks,
+  CheckCircle,
+  TrendingDown,
+  FileText,
+  Users,
+  BookOpen,
+  GitBranch,
+  RefreshCw,
+  TestTube,
+  Monitor,
+  Layers,
+  Terminal,
+  Rocket,
+  ExternalLink,
+  FolderOpen,
+  Play,
+  Zap,
+  Globe,
+  Eye,
+  History,
+  Share2,
+  PenTool,
+  type LucideIcon,
+} from "lucide-react";
+
+const iconMap: Record<string, LucideIcon> = {
+  Keyboard,
+  Search,
+  ListChecks,
+  CheckCircle,
+  TrendingDown,
+  FileText,
+  Users,
+  BookOpen,
+  GitBranch,
+  RefreshCw,
+  TestTube,
+  Monitor,
+  Layers,
+  Terminal,
+  Rocket,
+  ExternalLink,
+  FolderOpen,
+  Play,
+  Zap,
+  Globe,
+  Eye,
+  History,
+  Share2,
+  PenTool,
+};
 
 const staggerContainer = {
   animate: {
@@ -27,6 +83,65 @@ type SlideProps = {
   slide: SlideType;
   isLightMode?: boolean;
 };
+
+function BulletIcon({ iconName, isLightMode }: { iconName?: string; isLightMode?: boolean }) {
+  const colorClass = isLightMode ? "text-cyan-600" : "text-cyan-400";
+  if (!iconName || !iconMap[iconName]) {
+    return <span className={`mt-1 ${colorClass}`}>▸</span>;
+  }
+  const Icon = iconMap[iconName];
+  return <Icon className={`w-6 h-6 mt-1 flex-shrink-0 ${colorClass}`} />;
+}
+
+function HeadingIcon({ iconName, isLightMode }: { iconName?: string; isLightMode?: boolean }) {
+  if (!iconName || !iconMap[iconName]) return null;
+  const Icon = iconMap[iconName];
+  const colorClass = isLightMode ? "text-cyan-600" : "text-cyan-400";
+  return <Icon className={`w-7 h-7 flex-shrink-0 ${colorClass}`} />;
+}
+
+function TypewriterText({ text, delay = 0, className }: { text: string; delay?: number; className?: string }) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [showCursor, setShowCursor] = useState(true);
+
+  useEffect(() => {
+    setDisplayedText("");
+    setShowCursor(true);
+
+    const startTimeout = setTimeout(() => {
+      let currentIndex = 0;
+      const interval = setInterval(() => {
+        if (currentIndex < text.length) {
+          setDisplayedText(text.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          clearInterval(interval);
+          // Hide cursor after typing is complete
+          setTimeout(() => setShowCursor(false), 500);
+        }
+      }, 50);
+
+      return () => clearInterval(interval);
+    }, delay * 1000);
+
+    return () => clearTimeout(startTimeout);
+  }, [text, delay]);
+
+  return (
+    <span className={className}>
+      {displayedText}
+      {showCursor && (
+        <motion.span
+          className="inline-block ml-1"
+          animate={{ opacity: [1, 0] }}
+          transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+        >
+          |
+        </motion.span>
+      )}
+    </span>
+  );
+}
 
 function TitleSlideContent({ slide, isLightMode }: { slide: TitleSlide; isLightMode?: boolean }) {
   return (
@@ -47,19 +162,19 @@ function TitleSlideContent({ slide, isLightMode }: { slide: TitleSlide; isLightM
       </motion.h1>
       {slide.subtitle && (
         <motion.p
-          className={`text-xl md:text-2xl lg:text-3xl max-w-3xl ${isLightMode ? "text-gray-600" : "text-gray-400"}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          className={`text-xl md:text-2xl lg:text-3xl max-w-3xl ${isLightMode ? "text-gray-800" : "text-gray-200"}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
         >
-          {slide.subtitle}
+          <TypewriterText text={slide.subtitle} delay={0.8} />
         </motion.p>
       )}
     </motion.div>
   );
 }
 
-function renderBulletContent(text: string, isLightMode?: boolean) {
+function renderBulletText(text: string, isLightMode?: boolean) {
   // Check if bullet contains a URL pattern
   const urlPattern = /(https?:\/\/[^\s]+|[a-z0-9-]+\.[a-z0-9-]+\.[a-z]{2,}[^\s]*)/gi;
   const match = text.match(urlPattern);
@@ -111,8 +226,8 @@ function StandardSlideContent({ slide, isLightMode }: { slide: StandardSlide; is
             variants={itemVariants}
             transition={{ duration: 0.4, delay: 0.1 + index * 0.1 }}
           >
-            <span className={`mt-1 ${isLightMode ? "text-purple-600" : "text-purple-400"}`}>▸</span>
-            <span>{renderBulletContent(bullet, isLightMode)}</span>
+            <BulletIcon iconName={bullet.icon} isLightMode={isLightMode} />
+            <span>{renderBulletText(bullet.text, isLightMode)}</span>
           </motion.li>
         ))}
       </ul>
@@ -176,7 +291,8 @@ function SplitSlideContent({ slide, isLightMode }: { slide: SplitSlide; isLightM
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           {slide.left.heading && (
-            <h3 className={`text-xl md:text-2xl font-semibold mb-4 md:mb-6 ${isLightMode ? "text-purple-600" : "text-purple-400"}`}>
+            <h3 className={`flex items-center gap-3 text-xl md:text-2xl font-semibold mb-4 md:mb-6 ${isLightMode ? "text-cyan-600" : "text-cyan-400"}`}>
+              <HeadingIcon iconName={slide.left.icon} isLightMode={isLightMode} />
               {slide.left.heading}
             </h3>
           )}
@@ -186,8 +302,8 @@ function SplitSlideContent({ slide, isLightMode }: { slide: SplitSlide; isLightM
                 key={index}
                 className={`flex items-start gap-3 text-base md:text-xl ${isLightMode ? "text-gray-700" : "text-gray-300"}`}
               >
-                <span className={`mt-1 ${isLightMode ? "text-purple-600" : "text-purple-400"}`}>▸</span>
-                <span>{bullet}</span>
+                <BulletIcon iconName={bullet.icon} isLightMode={isLightMode} />
+                <span>{bullet.text}</span>
               </li>
             ))}
           </ul>
@@ -198,7 +314,8 @@ function SplitSlideContent({ slide, isLightMode }: { slide: SplitSlide; isLightM
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           {slide.right.heading && (
-            <h3 className={`text-xl md:text-2xl font-semibold mb-4 md:mb-6 ${isLightMode ? "text-pink-600" : "text-pink-400"}`}>
+            <h3 className={`flex items-center gap-3 text-xl md:text-2xl font-semibold mb-4 md:mb-6 ${isLightMode ? "text-cyan-600" : "text-cyan-400"}`}>
+              <HeadingIcon iconName={slide.right.icon} isLightMode={isLightMode} />
               {slide.right.heading}
             </h3>
           )}
@@ -208,8 +325,8 @@ function SplitSlideContent({ slide, isLightMode }: { slide: SplitSlide; isLightM
                 key={index}
                 className={`flex items-start gap-3 text-base md:text-xl ${isLightMode ? "text-gray-700" : "text-gray-300"}`}
               >
-                <span className={`mt-1 ${isLightMode ? "text-pink-600" : "text-pink-400"}`}>▸</span>
-                <span>{bullet}</span>
+                <BulletIcon iconName={bullet.icon} isLightMode={isLightMode} />
+                <span>{bullet.text}</span>
               </li>
             ))}
           </ul>

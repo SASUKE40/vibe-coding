@@ -11,9 +11,14 @@ export type TitleSlide = BaseSlide & {
   subtitle?: string;
 };
 
+export type BulletItem = {
+  text: string;
+  icon?: string;
+};
+
 export type StandardSlide = BaseSlide & {
   type: "standard";
-  bullets: string[];
+  bullets: BulletItem[];
 };
 
 export type CodeSlide = BaseSlide & {
@@ -27,11 +32,13 @@ export type SplitSlide = BaseSlide & {
   type: "split";
   left: {
     heading?: string;
-    bullets: string[];
+    icon?: string;
+    bullets: BulletItem[];
   };
   right: {
     heading?: string;
-    bullets: string[];
+    icon?: string;
+    bullets: BulletItem[];
   };
 };
 

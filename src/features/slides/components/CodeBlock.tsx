@@ -1,3 +1,6 @@
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 type CodeBlockProps = {
   code: string;
   language: string;
@@ -20,13 +23,23 @@ export function CodeBlock({ code, language, isLightMode }: CodeBlockProps) {
             {language}
           </span>
         </div>
-        <pre className="p-6 overflow-x-auto">
-          <code className={`text-sm md:text-base lg:text-lg font-mono whitespace-pre ${
-            isLightMode ? "text-gray-800" : "text-gray-100"
-          }`}>
-            {code}
-          </code>
-        </pre>
+        <SyntaxHighlighter
+          language={language}
+          style={isLightMode ? oneLight : oneDark}
+          customStyle={{
+            margin: 0,
+            padding: "1.5rem",
+            fontSize: "1rem",
+            background: "transparent",
+          }}
+          codeTagProps={{
+            style: {
+              fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+            },
+          }}
+        >
+          {code}
+        </SyntaxHighlighter>
       </div>
     </div>
   );

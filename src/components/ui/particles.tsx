@@ -12,7 +12,9 @@ type ParticlesProps = {
   isLightMode?: boolean;
 };
 
-type Circle = {
+type ParticleShape = "circle" | "star" | "diamond" | "triangle" | "plus" | "ring";
+
+type Particle = {
   x: number;
   y: number;
   translateX: number;
@@ -23,6 +25,12 @@ type Circle = {
   dx: number;
   dy: number;
   magnetism: number;
+  hue: number;
+  pulse: number;
+  pulseSpeed: number;
+  shape: ParticleShape;
+  rotation: number;
+  rotationSpeed: number;
 };
 
 type MousePosition = {
@@ -32,7 +40,7 @@ type MousePosition = {
 
 export function Particles({
   className = "",
-  quantity = 30,
+  quantity = 25,
   staticity = 50,
   ease = 50,
   refresh = false,
@@ -41,7 +49,7 @@ export function Particles({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const context = useRef<CanvasRenderingContext2D | null>(null);
-  const circles = useRef<Circle[]>([]);
+  const particles = useRef<Particle[]>([]);
   const mouse = useRef<MousePosition>({ x: 0, y: 0 });
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
@@ -106,7 +114,7 @@ export function Particles({
 
   const resizeCanvas = () => {
     if (canvasContainerRef.current && canvasRef.current && context.current) {
-      circles.current.length = 0;
+      particles.current.length = 0;
       canvasSize.current.w = canvasContainerRef.current.offsetWidth;
       canvasSize.current.h = canvasContainerRef.current.offsetHeight;
       canvasRef.current.width = canvasSize.current.w * dpr;
@@ -117,17 +125,32 @@ export function Particles({
     }
   };
 
-  const circleParams = (): Circle => {
+  const createParticle = (): Particle => {
     const x = Math.floor(Math.random() * canvasSize.current.w);
     const y = Math.floor(Math.random() * canvasSize.current.h);
     const translateX = 0;
     const translateY = 0;
-    const size = Math.floor(Math.random() * 2) + 1;
+    // Varied sizes: mostly small with occasional larger ones
+    const sizeRandom = Math.random();
+    const size = sizeRandom > 0.95 ? 3 + Math.random() * 2 : sizeRandom > 0.8 ? 2 + Math.random() : 0.5 + Math.random() * 1.5;
     const alpha = 0;
-    const targetAlpha = parseFloat((Math.random() * 0.6 + 0.1).toFixed(1));
-    const dx = (Math.random() - 0.5) * 0.2;
-    const dy = (Math.random() - 0.5) * 0.2;
-    const magnetism = 0.1 + Math.random() * 4;
+    const targetAlpha = parseFloat((Math.random() * 0.4 + 0.1).toFixed(2));
+    // Slower, more elegant movement
+    const dx = (Math.random() - 0.5) * 0.1;
+    const dy = (Math.random() - 0.5) * 0.1;
+    const magnetism = 0.1 + Math.random() * 2;
+    // Color hue for subtle variation (purple to cyan range)
+    const hue = isLightMode ? 260 + Math.random() * 60 : 200 + Math.random() * 80;
+    // Pulse effect
+    const pulse = Math.random() * Math.PI * 2;
+    const pulseSpeed = 0.01 + Math.random() * 0.02;
+    // Random shape
+    const shapes: ParticleShape[] = ["circle", "circle", "star", "diamond", "triangle", "plus", "ring"];
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    // Rotation
+    const rotation = Math.random() * Math.PI * 2;
+    const rotationSpeed = (Math.random() - 0.5) * 0.02;
+
     return {
       x,
       y,
@@ -139,23 +162,150 @@ export function Particles({
       dx,
       dy,
       magnetism,
+      hue,
+      pulse,
+      pulseSpeed,
+      shape,
+      rotation,
+      rotationSpeed,
     };
   };
 
-  const drawCircle = (circle: Circle, update = false) => {
+  const drawShape = (ctx: CanvasRenderingContext2D, shape: ParticleShape, x: number, y: number, size: number, rotation: number) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+
+    switch (shape) {
+      case "circle":
+        ctx.beginPath();
+        ctx.arc(0, 0, size, 0, 2 * Math.PI);
+        ctx.fill();
+        break;
+
+      case "star":
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          const outerAngle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+          const innerAngle = outerAngle + Math.PI / 5;
+          const outerX = Math.cos(outerAngle) * size;
+          const outerY = Math.sin(outerAngle) * size;
+          const innerX = Math.cos(innerAngle) * size * 0.4;
+          const innerY = Math.sin(innerAngle) * size * 0.4;
+          if (i === 0) ctx.moveTo(outerX, outerY);
+          else ctx.lineTo(outerX, outerY);
+          ctx.lineTo(innerX, innerY);
+        }
+        ctx.closePath();
+        ctx.fill();
+        break;
+
+      case "diamond":
+        ctx.beginPath();
+        ctx.moveTo(0, -size);
+        ctx.lineTo(size * 0.6, 0);
+        ctx.lineTo(0, size);
+        ctx.lineTo(-size * 0.6, 0);
+        ctx.closePath();
+        ctx.fill();
+        break;
+
+      case "triangle":
+        ctx.beginPath();
+        ctx.moveTo(0, -size);
+        ctx.lineTo(size * 0.866, size * 0.5);
+        ctx.lineTo(-size * 0.866, size * 0.5);
+        ctx.closePath();
+        ctx.fill();
+        break;
+
+      case "plus":
+        const thickness = size * 0.35;
+        ctx.beginPath();
+        ctx.rect(-thickness, -size, thickness * 2, size * 2);
+        ctx.rect(-size, -thickness, size * 2, thickness * 2);
+        ctx.fill();
+        break;
+
+      case "ring":
+        ctx.beginPath();
+        ctx.arc(0, 0, size, 0, 2 * Math.PI);
+        ctx.arc(0, 0, size * 0.5, 0, 2 * Math.PI, true);
+        ctx.fill();
+        break;
+    }
+
+    ctx.restore();
+  };
+
+  const drawParticle = (particle: Particle, update = false) => {
     if (context.current) {
-      const { x, y, translateX, translateY, size, alpha } = circle;
-      context.current.translate(translateX, translateY);
-      context.current.beginPath();
-      context.current.arc(x, y, size, 0, 2 * Math.PI);
-      context.current.fillStyle = isLightMode
-        ? `rgba(120, 80, 200, ${alpha})`
-        : `rgba(255, 255, 255, ${alpha})`;
-      context.current.fill();
-      context.current.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const { x, y, translateX, translateY, size, alpha, hue, pulse, shape, rotation } = particle;
+      const ctx = context.current;
+
+      ctx.save();
+      ctx.translate(translateX, translateY);
+
+      // Pulsing size effect
+      const pulseSize = size + Math.sin(pulse) * size * 0.2;
+      const pulseAlpha = alpha * (0.8 + Math.sin(pulse) * 0.2);
+
+      // Draw glow
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, pulseSize * 3);
+      if (isLightMode) {
+        gradient.addColorStop(0, `hsla(${hue}, 60%, 50%, ${pulseAlpha * 0.3})`);
+        gradient.addColorStop(0.5, `hsla(${hue}, 60%, 50%, ${pulseAlpha * 0.1})`);
+        gradient.addColorStop(1, `hsla(${hue}, 60%, 50%, 0)`);
+      } else {
+        gradient.addColorStop(0, `hsla(${hue}, 80%, 70%, ${pulseAlpha * 0.4})`);
+        gradient.addColorStop(0.5, `hsla(${hue}, 80%, 70%, ${pulseAlpha * 0.15})`);
+        gradient.addColorStop(1, `hsla(${hue}, 80%, 70%, 0)`);
+      }
+
+      ctx.beginPath();
+      ctx.arc(x, y, pulseSize * 3, 0, 2 * Math.PI);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Draw core shape
+      ctx.fillStyle = isLightMode
+        ? `hsla(${hue}, 50%, 40%, ${pulseAlpha})`
+        : `hsla(${hue}, 70%, 80%, ${pulseAlpha})`;
+      drawShape(ctx, shape, x, y, pulseSize, rotation);
+
+      ctx.restore();
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       if (!update) {
-        circles.current.push(circle);
+        particles.current.push(particle);
+      }
+    }
+  };
+
+  const drawConnections = () => {
+    if (!context.current) return;
+    const ctx = context.current;
+    const connectionDistance = 120;
+
+    for (let i = 0; i < particles.current.length; i++) {
+      for (let j = i + 1; j < particles.current.length; j++) {
+        const p1 = particles.current[i];
+        const p2 = particles.current[j];
+        const dx = (p1.x + p1.translateX) - (p2.x + p2.translateX);
+        const dy = (p1.y + p1.translateY) - (p2.y + p2.translateY);
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < connectionDistance) {
+          const opacity = (1 - distance / connectionDistance) * 0.15 * Math.min(p1.alpha, p2.alpha);
+          ctx.beginPath();
+          ctx.moveTo(p1.x + p1.translateX, p1.y + p1.translateY);
+          ctx.lineTo(p2.x + p2.translateX, p2.y + p2.translateY);
+          ctx.strokeStyle = isLightMode
+            ? `rgba(120, 80, 200, ${opacity})`
+            : `rgba(200, 200, 255, ${opacity})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
       }
     }
   };
@@ -173,10 +323,9 @@ export function Particles({
 
   const drawParticles = () => {
     clearContext();
-    const particleCount = quantity;
-    for (let i = 0; i < particleCount; i++) {
-      const circle = circleParams();
-      drawCircle(circle);
+    for (let i = 0; i < quantity; i++) {
+      const particle = createParticle();
+      drawParticle(particle);
     }
   };
 
@@ -194,44 +343,59 @@ export function Particles({
 
   const animate = (): number => {
     clearContext();
-    circles.current.forEach((circle, i) => {
+
+    // Draw connections first (behind particles)
+    drawConnections();
+
+    particles.current.forEach((particle, i) => {
       const edge = [
-        circle.x + circle.translateX - circle.size,
-        canvasSize.current.w - circle.x - circle.translateX - circle.size,
-        circle.y + circle.translateY - circle.size,
-        canvasSize.current.h - circle.y - circle.translateY - circle.size,
+        particle.x + particle.translateX - particle.size,
+        canvasSize.current.w - particle.x - particle.translateX - particle.size,
+        particle.y + particle.translateY - particle.size,
+        canvasSize.current.h - particle.y - particle.translateY - particle.size,
       ];
       const closestEdge = edge.reduce((a, b) => Math.min(a, b));
       const remapClosestEdge = parseFloat(
         remapValue(closestEdge, 0, 20, 0, 1).toFixed(2),
       );
       if (remapClosestEdge > 1) {
-        circle.alpha += 0.02;
-        if (circle.alpha > circle.targetAlpha) {
-          circle.alpha = circle.targetAlpha;
+        particle.alpha += 0.01;
+        if (particle.alpha > particle.targetAlpha) {
+          particle.alpha = particle.targetAlpha;
         }
       } else {
-        circle.alpha = circle.targetAlpha * remapClosestEdge;
+        particle.alpha = particle.targetAlpha * remapClosestEdge;
       }
-      circle.x += circle.dx;
-      circle.y += circle.dy;
-      circle.translateX +=
-        (mouse.current.x / (staticity / circle.magnetism) - circle.translateX) /
+
+      // Update position
+      particle.x += particle.dx;
+      particle.y += particle.dy;
+
+      // Update pulse
+      particle.pulse += particle.pulseSpeed;
+
+      // Update rotation
+      particle.rotation += particle.rotationSpeed;
+
+      // Mouse interaction
+      particle.translateX +=
+        (mouse.current.x / (staticity / particle.magnetism) - particle.translateX) /
         ease;
-      circle.translateY +=
-        (mouse.current.y / (staticity / circle.magnetism) - circle.translateY) /
+      particle.translateY +=
+        (mouse.current.y / (staticity / particle.magnetism) - particle.translateY) /
         ease;
+
       if (
-        circle.x < -circle.size ||
-        circle.x > canvasSize.current.w + circle.size ||
-        circle.y < -circle.size ||
-        circle.y > canvasSize.current.h + circle.size
+        particle.x < -particle.size ||
+        particle.x > canvasSize.current.w + particle.size ||
+        particle.y < -particle.size ||
+        particle.y > canvasSize.current.h + particle.size
       ) {
-        circles.current.splice(i, 1);
-        const newCircle = circleParams();
-        drawCircle(newCircle);
+        particles.current.splice(i, 1);
+        const newParticle = createParticle();
+        drawParticle(newParticle);
       } else {
-        drawCircle(circle, true);
+        drawParticle(particle, true);
       }
     });
     return window.requestAnimationFrame(animate);
