@@ -8,7 +8,7 @@ export const slides: Slide[] = [
     subtitle: "Advanced patterns for productive AI-assisted development",
   },
   {
-    id: 4,
+    id: 2,
     type: "code",
     title: "Model Preference",
     description: "Configure Opus 4.5 with extended thinking for complex tasks",
@@ -23,14 +23,14 @@ export const slides: Slide[] = [
     language: "json",
   },
   {
-    id: 8,
+    id: 3,
     type: "image",
     title: "Planning Mode",
     imageUrl: "/slides/plan-mode.png",
     caption: "shift+tab twice to enter plan mode",
   },
   {
-    id: 9,
+    id: 4,
     type: "standard",
     title: "Planning Mode",
     bullets: [
@@ -85,7 +85,14 @@ jobs:
     language: "yaml",
   },
   {
-    id: 16,
+    id: 8,
+    type: "image",
+    title: "Claude Review in Action",
+    imageUrl: "/slides/claude-review.png",
+    caption: "Mention @claude in PR comments to trigger AI-powered code review",
+  },
+  {
+    id: 9,
     type: "standard",
     title: "Chrome Extension Verification",
     bullets: [
@@ -98,14 +105,14 @@ jobs:
     ],
   },
   {
-    id: 12,
+    id: 10,
     type: "image",
     title: "PostToolUse Hook",
     imageUrl: "/slides/hooks.png",
     caption: "Auto-format code after Claude modifies files",
   },
   {
-    id: 13,
+    id: 11,
     type: "code",
     title: "PostToolUse Hook",
     description: "Auto-format files after Claude modifies them",
@@ -123,14 +130,14 @@ jobs:
     language: "json",
   },
   {
-    id: 10,
+    id: 12,
     type: "image",
     title: "Slash Commands",
     imageUrl: "/slides/slash-commands.png",
     caption: "/commit-push-pr - Commit, push, and open a PR",
   },
   {
-    id: 11,
+    id: 13,
     type: "code",
     title: "Slash Commands",
     description: "Custom commands in .claude/commands/",
@@ -186,14 +193,14 @@ If there are any issues at any step, stop and report them.`,
     language: "json",
   },
   {
-    id: 2,
+    id: 16,
     type: "image",
     title: "Hybrid Local + Web Sessions",
     imageUrl: "/slides/web-sessions.png",
     caption: "claude.ai/code running alongside local terminal instances",
   },
   {
-    id: 3,
+    id: 17,
     type: "split",
     title: "Hybrid Local + Web Sessions",
     left: {
@@ -216,7 +223,7 @@ If there are any issues at any step, stop and report them.`,
     },
   },
   {
-    id: 17,
+    id: 18,
     type: "quote",
     title: "The Most Important Tip",
     quote:

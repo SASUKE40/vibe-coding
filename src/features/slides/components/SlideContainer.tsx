@@ -5,6 +5,8 @@ import { useSlideNavigation } from "../hooks/useSlideNavigation";
 import { useFullscreen } from "../hooks/useFullscreen";
 import { Slide } from "./Slide";
 import { SlideProgress } from "./SlideProgress";
+import { AuroraBackground } from "~/components/ui/aurora-background";
+import { Particles } from "~/components/ui/particles";
 
 type SlideContainerProps = {
   slideNumber: number;
@@ -58,11 +60,33 @@ export function SlideContainer({ slideNumber }: SlideContainerProps) {
 
   return (
     <div className={isLightMode ? "slide-container-light" : "slide-container"}>
+      {/* Aurora background effect */}
+      <AuroraBackground
+        className="absolute inset-0 z-0"
+        isLightMode={isLightMode}
+        showRadialGradient={true}
+      >
+        <span className="sr-only">Aurora background effect</span>
+      </AuroraBackground>
+
+      {/* Particles overlay */}
+      <Particles
+        className="z-10"
+        quantity={50}
+        staticity={50}
+        ease={50}
+        isLightMode={isLightMode}
+      />
+
       <AnimatePresence mode="wait">
         <Slide key={slide.id} slide={slide} isLightMode={isLightMode} />
       </AnimatePresence>
 
-      <SlideProgress current={currentSlide} total={totalSlides} isLightMode={isLightMode} />
+      <SlideProgress
+        current={currentSlide}
+        total={totalSlides}
+        isLightMode={isLightMode}
+      />
 
       {/* Theme toggle button */}
       <button
@@ -72,16 +96,40 @@ export function SlideContainer({ slideNumber }: SlideContainerProps) {
             ? "bg-gray-200/50 text-gray-600 hover:bg-gray-300/50 hover:text-gray-900"
             : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white"
         }`}
-        aria-label={isLightMode ? "Switch to dark mode" : "Switch to light mode"}
-        title={isLightMode ? "Switch to dark mode (L)" : "Switch to light mode (L)"}
+        aria-label={
+          isLightMode ? "Switch to dark mode" : "Switch to light mode"
+        }
+        title={
+          isLightMode ? "Switch to dark mode (L)" : "Switch to light mode (L)"
+        }
       >
         {isLightMode ? (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+            />
           </svg>
         ) : (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+            />
           </svg>
         )}
       </button>
