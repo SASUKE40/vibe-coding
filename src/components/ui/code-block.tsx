@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import oneDark from "react-syntax-highlighter/dist/cjs/styles/prism/one-dark";
+import oneLight from "react-syntax-highlighter/dist/cjs/styles/prism/one-light";
 import { motion } from "framer-motion";
 import { cn } from "~/lib/utils";
 
