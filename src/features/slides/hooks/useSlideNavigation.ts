@@ -11,7 +11,7 @@ export function useSlideNavigation(currentSlide: number): SlideNavigation {
     (n: number) => {
       const clampedSlide = Math.max(1, Math.min(n, TOTAL_SLIDES));
       navigate({
-        to: "/slides",
+        to: "/",
         search: { slide: clampedSlide },
       });
     },

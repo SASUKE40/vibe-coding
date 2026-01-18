@@ -65,7 +65,7 @@ export const Route = createRootRoute({
 
 function DevTools() {
   const location = useLocation();
-  if (location.pathname === "/slides") {
+  if (location.pathname === "/") {
     return null;
   }
   return <TanStackRouterDevtools position="bottom-right" />;
@@ -73,7 +73,7 @@ function DevTools() {
 
 function NavBar() {
   const location = useLocation();
-  if (location.pathname === "/slides") {
+  if (location.pathname === "/") {
     return null;
   }
   return (
@@ -86,7 +86,7 @@ function NavBar() {
           }}
           activeOptions={{ exact: true }}
         >
-          Home
+          Slides
         </Link>{" "}
         <Link
           to="/posts"
@@ -119,23 +119,6 @@ function NavBar() {
           }}
         >
           Deferred
-        </Link>{" "}
-        <Link
-          to="/slides"
-          activeProps={{
-            className: "font-bold",
-          }}
-        >
-          Slides
-        </Link>{" "}
-        <Link
-          // @ts-expect-error
-          to="/this-route-does-not-exist"
-          activeProps={{
-            className: "font-bold",
-          }}
-        >
-          This Route Does Not Exist
         </Link>
       </div>
       <hr />
