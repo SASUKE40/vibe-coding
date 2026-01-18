@@ -28,3 +28,49 @@
     outline: none !important;
   }
 }
+
+@layer components {
+  .slide-container {
+    @apply fixed inset-0 overflow-hidden;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 25%, #16213e 50%, #1a1a2e 75%, #0f0f1a 100%);
+  }
+
+  .slide-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 40%, rgba(120, 80, 200, 0.15), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 60%, rgba(60, 120, 200, 0.1), transparent),
+      radial-gradient(ellipse 40% 30% at 40% 80%, rgba(200, 80, 120, 0.08), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .slide-container > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .slide-container-light {
+    @apply fixed inset-0 overflow-hidden;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%, #f8fafc 100%);
+  }
+
+  .slide-container-light::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 40%, rgba(168, 85, 247, 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 60%, rgba(59, 130, 246, 0.06), transparent),
+      radial-gradient(ellipse 40% 30% at 40% 80%, rgba(236, 72, 153, 0.05), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .slide-container-light > * {
+    position: relative;
+    z-index: 1;
+  }
+}

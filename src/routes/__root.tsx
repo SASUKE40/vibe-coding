@@ -4,6 +4,7 @@ import {
   Link,
   Scripts,
   createRootRoute,
+  useLocation,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
@@ -62,6 +63,86 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 });
 
+function DevTools() {
+  const location = useLocation();
+  if (location.pathname === "/slides") {
+    return null;
+  }
+  return <TanStackRouterDevtools position="bottom-right" />;
+}
+
+function NavBar() {
+  const location = useLocation();
+  if (location.pathname === "/slides") {
+    return null;
+  }
+  return (
+    <>
+      <div className="p-2 flex gap-2 text-lg">
+        <Link
+          to="/"
+          activeProps={{
+            className: "font-bold",
+          }}
+          activeOptions={{ exact: true }}
+        >
+          Home
+        </Link>{" "}
+        <Link
+          to="/posts"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          Posts
+        </Link>{" "}
+        <Link
+          to="/users"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          Users
+        </Link>{" "}
+        <Link
+          to="/route-a"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          Pathless Layout
+        </Link>{" "}
+        <Link
+          to="/deferred"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          Deferred
+        </Link>{" "}
+        <Link
+          to="/slides"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          Slides
+        </Link>{" "}
+        <Link
+          // @ts-expect-error
+          to="/this-route-does-not-exist"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          This Route Does Not Exist
+        </Link>
+      </div>
+      <hr />
+    </>
+  );
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html>
@@ -69,61 +150,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <div className="p-2 flex gap-2 text-lg">
-          <Link
-            to="/"
-            activeProps={{
-              className: "font-bold",
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>{" "}
-          <Link
-            to="/posts"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            Posts
-          </Link>{" "}
-          <Link
-            to="/users"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            Users
-          </Link>{" "}
-          <Link
-            to="/route-a"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            Pathless Layout
-          </Link>{" "}
-          <Link
-            to="/deferred"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            Deferred
-          </Link>{" "}
-          <Link
-            // @ts-expect-error
-            to="/this-route-does-not-exist"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            This Route Does Not Exist
-          </Link>
-        </div>
-        <hr />
+        <NavBar />
         {children}
-        <TanStackRouterDevtools position="bottom-right" />
+        <DevTools />
         <Scripts />
       </body>
     </html>
