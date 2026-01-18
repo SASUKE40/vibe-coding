@@ -10,12 +10,6 @@ import type {
 } from "../types";
 import { CodeBlock } from "./CodeBlock";
 
-const slideVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
-};
-
 const staggerContainer = {
   animate: {
     transition: {
@@ -38,26 +32,25 @@ function TitleSlideContent({ slide, isLightMode }: { slide: TitleSlide; isLightM
   return (
     <motion.div
       className="flex flex-col items-center justify-center text-center px-8"
-      variants={staggerContainer}
-      initial="initial"
-      animate="animate"
     >
       <motion.h1
-        className={`text-5xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r bg-clip-text text-transparent mb-6 pt-2 ${
+        className={`text-5xl md:text-7xl lg:text-8xl font-bold mb-6 pt-2 text-center bg-gradient-to-r bg-clip-text text-transparent ${
           isLightMode
-            ? "from-purple-600 via-pink-600 to-red-600"
-            : "from-purple-400 via-pink-500 to-red-500"
+            ? "from-blue-600 via-cyan-500 to-teal-500"
+            : "from-blue-400 via-cyan-400 to-teal-400"
         }`}
-        variants={itemVariants}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, filter: "blur(10px)", y: 20 }}
+        animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+        transition={{ duration: 0.6, ease: [0.2, 0.65, 0.3, 0.9] as [number, number, number, number] }}
       >
         {slide.title}
       </motion.h1>
       {slide.subtitle && (
         <motion.p
           className={`text-xl md:text-2xl lg:text-3xl max-w-3xl ${isLightMode ? "text-gray-600" : "text-gray-400"}`}
-          variants={itemVariants}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
         >
           {slide.subtitle}
         </motion.p>

@@ -5,6 +5,8 @@ import { useSlideNavigation } from "../hooks/useSlideNavigation";
 import { useFullscreen } from "../hooks/useFullscreen";
 import { Slide } from "./Slide";
 import { SlideProgress } from "./SlideProgress";
+import { AuroraBackground } from "~/components/ui/aurora-background";
+import { Particles } from "~/components/ui/particles";
 
 type SlideContainerProps = {
   slideNumber: number;
@@ -58,6 +60,24 @@ export function SlideContainer({ slideNumber }: SlideContainerProps) {
 
   return (
     <div className={isLightMode ? "slide-container-light" : "slide-container"}>
+      {/* Aurora background effect */}
+      <AuroraBackground
+        className="absolute inset-0 z-0"
+        isLightMode={isLightMode}
+        showRadialGradient={true}
+      >
+        <span className="sr-only">Aurora background effect</span>
+      </AuroraBackground>
+
+      {/* Particles overlay */}
+      <Particles
+        className="z-1"
+        quantity={50}
+        staticity={50}
+        ease={50}
+        isLightMode={isLightMode}
+      />
+
       <AnimatePresence mode="wait">
         <Slide key={slide.id} slide={slide} isLightMode={isLightMode} />
       </AnimatePresence>
