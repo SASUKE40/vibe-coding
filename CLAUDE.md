@@ -44,6 +44,7 @@ Give Claude verification loops for 2-3x quality improvement:
 **File-based Routing**: Routes are defined in `src/routes/`. The route tree is auto-generated in `src/routeTree.gen.ts`.
 
 **Route Patterns**:
+
 - `index.tsx` - Index route for a path
 - `posts.tsx` - Layout route (wraps child routes like `posts.$postId.tsx`)
 - `posts.$postId.tsx` - Dynamic segment route
